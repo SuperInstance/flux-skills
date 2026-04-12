@@ -1,0 +1,25 @@
+meta:
+  skill_name: murmur
+  version: "0.1.0"
+  flux_isa_version: "2"
+
+runtime:
+  max_iterations: 1000
+  timeout_seconds: 3600
+
+provider:
+  type: none
+  max_calls_per_day: 0
+  budget_strategy: accumulate
+
+behavior:
+  max_thoughts: 50
+  interval_sec: 60
+  depth: medium
+  confidence_threshold: 30
+  strategies:
+    - explore
+    - connect
+    - contradict
+    - synthesize
+    - question
