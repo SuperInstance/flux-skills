@@ -1,0 +1,28 @@
+; MUD Navigator — FLUX bytecode skill for Cocapn MUD interaction
+; Maps ISA v3 instinct opcodes to MUD actions
+;
+; Usage: Load into FLUX VM, set R0=agent_id, then RUN
+; Returns: R0=status, R1=room_id, R2=message_count
+
+; === PHASE 1: Initialize ===
+MOVI R0, 0           ; status = OK
+MOVI R1, 0           ; room = harbor (0)
+MOVI R2, 0           ; message_count = 0
+
+; === PHASE 2: Enter MUD ===
+INSTINCT R3, 0x30    ; EXPLORE — auto-navigate to tavern
+CONF R3, 0.95        ; high confidence in navigation
+
+; === PHASE 3: Announce presence ===
+TELL R4, 0x01        ; send greeting (target=0=broadcast)
+WITNESS R5, 0x01     ; leave witness mark
+
+; === PHASE 4: Check messages ===
+ASK R6, 0x00         ; query room state
+
+; === PHASE 5: Score and evolve ===
+EVOLVE R7, 0x50      ; initial fitness = 50
+MERGE R8, R7, R6     ; blend fitness with room activity
+
+; === PHASE 6: Loop or halt ===
+HALT

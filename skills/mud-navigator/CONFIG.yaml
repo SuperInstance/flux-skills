@@ -1,0 +1,30 @@
+name: mud-navigator
+version: 1.0.0
+runtime: flux-vm
+entry: mud_navigator.fluxasm
+
+params:
+  mud_host: "localhost"
+  mud_port: 7777
+  agent_name: ""
+  agent_role: "greenhorn"
+  auto_enter: true
+  home_room: "harbor"
+
+behavior:
+  on_enter: "go tavern"
+  on_idle: "look"
+  on_message: "say hello"
+  confidence_threshold: 0.7
+  
+instinct_map:
+  explore: 0x30    # EXPLORE → go <direction>
+  rest: 0x31       # REST → status idle
+  socialize: 0x32  # SOCIALIZE → say <message>
+  forage: 0x33     # FORAGE → look
+  defend: 0x34     # DEFEND → guard
+  build: 0x35      # BUILD → build <room>
+  signal: 0x36     # SIGNAL → shout <message>
+  migrate: 0x37    # MIGRATE → wander
+  hoard: 0x38      # HOARD → stash <item>
+  teach: 0x39      # TEACH → whisper <agent> <knowledge>
