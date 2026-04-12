@@ -1,0 +1,39 @@
+# Spreader Skill Configuration
+skill:
+  name: spreader
+  version: 1.0.0
+  description: "One idea, many perspectives — specialist role fan-out with synthesis"
+  author: Oracle1
+  created: 2026-04-12
+
+roles:
+  - name: architect
+    prompt: "Think about system design, scalability, and long-term maintainability"
+    weight: 1.0
+  - name: critic
+    prompt: "Find the flaws, edge cases, and failure modes"
+    weight: 0.9
+  - name: pragmatist
+    prompt: "Focus on what ships today with the resources available"
+    weight: 0.8
+  - name: visionary
+    prompt: "Imagine what this enables 2-5 years from now"
+    weight: 0.7
+  - name: historian
+    prompt: "What does prior art teach us? What worked, what failed?"
+    weight: 0.6
+  - name: contrarian
+    prompt: "Argue the opposite position. Challenge the premise itself."
+    weight: 0.5
+
+synthesis:
+  consensus_threshold: 0.7
+  disagreement_value: 0.3
+  action_item_min_confidence: 0.6
+  max_action_items: 5
+
+runtime:
+  max_roles_per_run: 6
+  brief_max_tokens: 100
+  deep_max_tokens: 300
+  cross_pollinate: false

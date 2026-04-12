@@ -1,0 +1,69 @@
+# Streamer — FLUX Assembly
+# Continuous content generation
+#
+# Input:  R0 = template name, R1 = parameters JSON pointer
+# Output: Stream of items via OUTPUT interrupt
+
+ENTRY:
+    PUSH R0
+    PUSH R1
+    
+    # Load parameters
+    CALL LOAD_PARAMS    # R10 = target_count, R11 = quality_threshold
+    LOAD R12, #0        # items generated
+    LOAD R13, #0        # items accepted
+
+    # ═══ STREAM: generate one item per tick ═══
+STREAM:
+    # Check target
+    CMP R10, #0         # 0 = unlimited
+    JZ GENERATE
+    CMP R12, R10
+    JGE FINISH
+
+    # ═══ GENERATE: create one item ═══
+GENERATE:
+    CALL SELECT_TEMPLATE  # R20 = template pointer
+    CALL FILL_TEMPLATE    # Fill with parameters
+    CALL RENDER          # R21 = rendered item
+
+    # ═══ VALIDATE: quality check ═══
+VALIDATE:
+    CALL SCORE_QUALITY   # R22 = quality score (0-100)
+    LOAD R23, R11        # threshold
+    MUL R23, #100
+    CMP R22, R23
+    JL RETRY             # below threshold → retry
+    
+    # Accept
+    CALL OUTPUT_ITEM
+    ADD R12, #1
+    ADD R13, #1
+    JMP STREAM
+
+    # ═══ RETRY: try again with adjusted params ═══
+RETRY:
+    CALL ADJUST_PARAMS
+    JMP STREAM
+
+    # ═══ FINISH ═══
+FINISH:
+    POP R1
+    POP R0
+    # Report: R12 generated, R13 accepted
+    RET
+
+LOAD_PARAMS:
+    RET
+SELECT_TEMPLATE:
+    RET
+FILL_TEMPLATE:
+    RET
+RENDER:
+    RET
+SCORE_QUALITY:
+    RET
+OUTPUT_ITEM:
+    RET
+ADJUST_PARAMS:
+    RET

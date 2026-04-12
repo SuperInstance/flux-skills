@@ -1,0 +1,28 @@
+# Streamer Skill Configuration
+skill:
+  name: streamer
+  version: 1.0.0
+  description: "Continuous content generation — tests, docs, vectors at configurable rates"
+  author: Oracle1
+  created: 2026-04-12
+
+templates:
+  - name: conformance_vector
+    description: "Generate ISA conformance test vectors"
+    output_format: "binary input + expected output"
+  - name: test_case
+    description: "Generate unit test cases for a function"
+    output_format: "input + expected + edge case flag"
+  - name: doc_entry
+    description: "Generate documentation for a code module"
+    output_format: "what/why/how sections"
+  - name: readme_section
+    description: "Generate a README section for a repo"
+    output_format: "markdown with examples"
+
+parameters:
+  rate: 10            # items per minute
+  quality_threshold: 0.8
+  max_items: 0        # 0 = unlimited
+  retry_on_fail: true
+  max_retries: 3

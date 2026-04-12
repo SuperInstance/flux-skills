@@ -1,0 +1,111 @@
+# Spreader — FLUX Assembly
+# One idea, many perspectives
+#
+# Input:  R0 = concept string pointer, R1 = concept length
+#         R2 = role bitmask (bit 0=architect, 1=critic, 2=pragmatist, etc.)
+# Output: R0 = result JSON pointer, R1 = result length
+
+# ═══ ENTRY ═══
+ENTRY:
+    PUSH R0              # Save concept
+    PUSH R1
+    PUSH R2
+
+    # Initialize perspective counter
+    LOAD R10, #0         # perspectives collected
+    LOAD R11, #6         # max roles
+
+    # ═══ DISPATCH: fan out to roles ═══
+DISPATCH:
+    CMP R2, #0           # any roles left?
+    JZ SYNTHESIZE        # no → synthesize
+
+    # Extract lowest set bit → role index
+    MOV R3, R2
+    AND R3, #1           # R3 = role index (0-5)
+    
+    # Role behavior table
+    # R3=0: architect, R3=1: critic, R3=2: pragmatist
+    # R3=3: visionary, R3=4: historian, R3=5: contrarian
+    
+    CALL ANALYZE_ROLE    # Generate perspective for this role
+    ADD R10, #1          # Increment counter
+    
+    # Shift role bitmask right
+    SHR R2, #1
+    JMP DISPATCH
+
+    # ═══ ANALYZE_ROLE: generate one perspective ═══
+ANALYZE_ROLE:
+    # Load role prompt based on R3
+    # Apply concept (R0,R1) through role lens
+    # Store perspective in perspective buffer
+    
+    LOAD R12, BUF_PERSP  # Perspective output buffer
+    CALL ROLE_PROMPT     # Get role-specific framing
+    CALL GENERATE        # Generate analysis
+    CALL SCORE_CONF      # Score confidence
+    
+    RET
+
+    # ═══ SYNTHESIZE: merge all perspectives ═══
+SYNTHESIZE:
+    POP R2
+    POP R1
+    POP R0
+    
+    # Scan perspectives for agreement patterns
+    CALL FIND_CONSENSUS  # R20 = consensus count
+    CALL FIND_DISAGREE   # R21 = disagreement count  
+    CALL EXTRACT_ACTIONS # R22 = action item count
+    
+    # Build output JSON
+    LOAD R0, BUF_OUTPUT
+    CALL BUILD_JSON
+    
+    # Done — result in R0,R1
+    RET
+
+    # ═══ ROLE_PROMPT: select framing for current role ═══
+ROLE_PROMPT:
+    CMP R3, #0
+    JZ ROLE_ARCHITECT
+    CMP R3, #1
+    JZ ROLE_CRITIC
+    CMP R3, #2
+    JZ ROLE_PRAGMATIST
+    CMP R3, #3
+    JZ ROLE_VISIONARY
+    CMP R3, #4
+    JZ ROLE_HISTORIAN
+    JMP ROLE_CONTRARIAN
+
+ROLE_ARCHITECT:
+    LOAD R4, STR_ARCHITECT
+    RET
+ROLE_CRITIC:
+    LOAD R4, STR_CRITIC
+    RET
+ROLE_PRAGMATIST:
+    LOAD R4, STR_PRAGMATIST
+    RET
+ROLE_VISIONARY:
+    LOAD R4, STR_VISIONARY
+    RET
+ROLE_HISTORIAN:
+    LOAD R4, STR_HISTORIAN
+    RET
+ROLE_CONTRARIAN:
+    LOAD R4, STR_CONTRARIAN
+    RET
+
+# ═══ DATA ═══
+STR_ARCHITECT:   .string "system design, scalability, long-term"
+STR_CRITIC:      .string "flaws, edge cases, failure modes"
+STR_PRAGMATIST:  .string "ships today, resources available"
+STR_VISIONARY:   .string "enables in 2-5 years"
+STR_HISTORIAN:   .string "prior art, what worked, what failed"
+STR_CONTRARIAN:  .string "argue opposite, challenge premise"
+
+BUF_PERSP:  .space 300
+BUF_OUTPUT: .space 2048

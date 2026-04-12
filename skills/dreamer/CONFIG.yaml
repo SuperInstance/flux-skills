@@ -1,0 +1,31 @@
+# Dreamer Skill Configuration
+skill:
+  name: dreamer
+  version: 1.0.0
+  description: "Overnight thinking — associative connections and creative leaps"
+  author: Oracle1
+  created: 2026-04-12
+
+dream_strategies:
+  - name: analogical
+    description: "Find analogies from other domains"
+    weight: 0.9
+  - name: combinatorial
+    description: "Combine unrelated concepts into new ones"
+    weight: 0.8
+  - name: inversion
+    description: "Flip the problem on its head"
+    weight: 0.7
+  - name: temporal
+    description: "Imagine the problem from 10 years in the future"
+    weight: 0.6
+  - name: biological
+    description: "Look for patterns in nature that mirror the problem"
+    weight: 0.5
+
+parameters:
+  dream_duration: 30s
+  surprise_threshold: 0.5
+  max_dreams: 10
+  associative_depth: 2
+  marinade_ticks: 100

@@ -1,0 +1,92 @@
+# Dreamer — FLUX Assembly
+# Overnight associative thinking
+#
+# Input:  R0 = context array pointer, R1 = stuck_points pointer
+# Output: R0 = dreams JSON pointer, R1 = dreams length
+
+ENTRY:
+    PUSH R0
+    PUSH R1
+    
+    # Load dream parameters
+    LOAD R10, #10        # max dreams
+    LOAD R11, #2         # associative depth
+    LOAD R12, #0         # dream counter
+    LOAD R13, #0         # surprise accumulator
+
+    # ═══ MARINATE: let concepts rest ═══
+MARINATE:
+    LOAD R14, #100       # marinade ticks
+MARINATE_LOOP:
+    SUB R14, #1
+    JZ ASSOCIATE
+    # Shuffle context randomly
+    CALL SHUFFLE
+    JMP MARINATE_LOOP
+
+    # ═══ ASSOCIATE: find connections ═══
+ASSOCIATE:
+    # Pick two random concepts from context
+    CALL RANDOM_PAIR     # R20, R21 = concept indices
+    
+    # Try each dream strategy
+    LOAD R15, #5         # 5 strategies
+STRATEGY_LOOP:
+    CALL APPLY_STRATEGY  # Generate dream from pair + strategy
+    CALL SCORE_SURPRISE  # R22 = surprise value
+    
+    # Only keep if surprising enough
+    LOAD R23, #50        # threshold (0.5 * 100)
+    CMP R22, R23
+    JL NEXT_STRATEGY     # skip if not surprising
+    
+    # Store dream
+    CALL STORE_DREAM
+    ADD R12, #1
+    
+    CMP R12, R10         # hit max dreams?
+    JGE FINISH
+
+NEXT_STRATEGY:
+    SUB R15, #1
+    JNZ STRATEGY_LOOP
+    
+    # Try another pair if we haven't hit max
+    CMP R12, R10
+    JL ASSOCIATE
+    
+    JMP FINISH
+
+    # ═══ FINISH: build output ═══
+FINISH:
+    POP R1
+    POP R0
+    
+    LOAD R0, BUF_DREAMS
+    CALL BUILD_DREAMS_JSON
+    RET
+
+# ═══ Strategies ═══
+APPLY_STRATEGY:
+    # R15 = strategy index (0-4)
+    # analogical, combinatorial, inversion, temporal, biological
+    RET
+
+SCORE_SURPRISE:
+    # Higher surprise = less obvious connection
+    # Measure: how many intermediate concepts needed to connect?
+    RET
+
+SHUFFLE:
+    RET
+
+RANDOM_PAIR:
+    RET
+
+STORE_DREAM:
+    RET
+
+BUILD_DREAMS_JSON:
+    RET
+
+BUF_DREAMS: .space 2048
