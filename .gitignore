@@ -1,0 +1,7 @@
+__pycache__/
+*.o
+target/
+zig-cache/
+zig-out/
+*.pyc
+skill_vm
